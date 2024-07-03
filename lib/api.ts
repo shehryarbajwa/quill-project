@@ -20,10 +20,6 @@ export const fetchChart = async (id: string, dateRange: DateRange | null) => {
     url = url + `?from=${from}&to=${to}`
   }
 
-
-
-
-
   const response = await fetch(url);
 
   if (!response.ok) {
