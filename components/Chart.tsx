@@ -77,7 +77,6 @@ export const Chart = ({ chartId, containerStyle }: ChartProps) => {
             transformedData.push(entry);
           }
 
-          // Add the total to the corresponding merchant
           if (merchant === 'Subway') {
             entry.spendAtSubway += total;
           } else if (merchant === 'Chevron') {
@@ -129,7 +128,6 @@ export const Chart = ({ chartId, containerStyle }: ChartProps) => {
 
     if (isWithinInitialInterval) {
       const filteredData = allData.filter((point) => {
-        console.log('point', point);
         const pointDate = parseISO(point.date);
         return isWithinInterval(pointDate, userInterval);
       });

@@ -20,25 +20,18 @@ export function DatePickerWithRange({
   className,
 }: HTMLAttributes<HTMLDivElement>) {
   const { dateRange, userDateRange, setUserDateRange } = useDateRangeContext();
-  const { addToast } = useToasts(); // Use the addToast function from react-toast-notifications
-
-  if (!dateRange || !dateRange.from || !dateRange.to) {
-    addToast('No date loaded from the data', {
-      appearance: 'error',
-    });
-    throw Error('No initial date was loaded');
-  }
+  const { addToast } = useToasts();
 
   const [date, setDate] = useState<DateRange | undefined>({
-    from: dateRange.from,
-    to: dateRange.to,
+    from: dateRange?.from,
+    to: dateRange?.to,
   });
 
   // Here we check for userDateRange. Upon loading the dashboard, it will be null so we set it to the dashboard's date range.
   // Once the user sets it to a custom date, we set the component's Date to the user selected one
   useEffect(() => {
     const range = userDateRange || dateRange;
-    setDate({ from: range.from, to: range.to });
+    setDate({ from: range?.from, to: range?.to });
   }, [dateRange, userDateRange]);
 
   const handleDateChange = (dateRange: DateRange | undefined) => {

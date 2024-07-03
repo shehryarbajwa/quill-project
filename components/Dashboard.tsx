@@ -42,25 +42,32 @@ export const Dashboard = ({
   const { setDateRange } = useDateRangeContext();
   const [preset, setPreset] = useState<string>('');
   const { addToast } = useToasts();
-
-  const { data, isLoading, error } = useQuery(['dashboardData', name], () =>
-    fetchDashboard(name)
-  );
+  const [isLoading, setIsLoading] = useState(true);
+  const [dashboard, setDashboard] = useState<any>(null);
 
   useEffect(() => {
-    if (data) {
-      setDateRange(getDateRange(data.dashboard.dateFilter.initialDateRange));
-      setPreset(data.dashboard.dateFilter.initialDateRange);
-    }
-  }, [data, setDateRange]);
+    const loadDashboard = async () => {
+      setIsLoading(true);
+      try {
+        const data = await fetchDashboard(name);
+        setDashboard(data);
+        setDateRange(getDateRange(data.dashboard.dateFilter.initialDateRange));
+        setPreset(data.dashboard.dateFilter.initialDateRange);
+      } catch (err) {
+        addToast('Error loading dashboard', { appearance: 'error' });
+        setDashboard(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadDashboard();
+  }, [name, setDateRange, addToast]);
 
   if (isLoading) return <div>Loading...</div>;
-  if (error || !data) {
-    addToast('Error loading dashboard', { appearance: 'error' });
-    return <div>Error loading dashboard</div>;
-  }
+  if (!dashboard) return <div>Error loading dashboard</div>;
 
-  const { charts } = data;
+  const { charts } = dashboard;
 
   return (
     <div style={containerStyle}>
