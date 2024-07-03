@@ -26,7 +26,6 @@
     "react": "^18",
     "react-day-picker": "^8.10.1",
     "react-dom": "^18",
-    "react-query": "^3.39.3",
     "react-toast-notifications": "^2.5.1",
     "recharts": "^2.12.7",
     "shadcn-ui": "^0.8.0",

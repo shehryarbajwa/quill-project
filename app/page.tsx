@@ -1,11 +1,20 @@
 'use client';
 import { Dashboard } from '@/components/Dashboard';
 import { DateRangeProvider } from '@/components/context/DateRangeContext';
-import { QueryClient, QueryClientProvider } from 'react-query';
 import { ToastProvider } from 'react-toast-notifications';
 
-const queryClient = new QueryClient();
-const onClickDashboardItem = (dashboardItem: any) => {
+interface ChartProps {
+  name: string;
+  id: string;
+  dashboardName: string;
+  chartType: 'line' | 'bar';
+  sqlQuery: string;
+  xAxisField: string;
+  yAxisField: string;
+  dateField: { table: string; field: string };
+}
+
+const onClickDashboardItem = (dashboardItem: ChartProps) => {
   console.log('Dashboard item clicked:', dashboardItem);
 };
 
@@ -18,16 +27,14 @@ const dashboardContainerStyle: React.CSSProperties = {
 
 export default function Home() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ToastProvider>
-        <DateRangeProvider>
-          <Dashboard
-            name="sales-dashboard"
-            containerStyle={dashboardContainerStyle}
-            onClickDashboardItem={onClickDashboardItem}
-          />
-        </DateRangeProvider>
-      </ToastProvider>
-    </QueryClientProvider>
+    <ToastProvider>
+      <DateRangeProvider>
+        <Dashboard
+          name="sales-dashboard"
+          containerStyle={dashboardContainerStyle}
+          onClickDashboardItem={onClickDashboardItem}
+        />
+      </DateRangeProvider>
+    </ToastProvider>
   );
 }

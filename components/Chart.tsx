@@ -23,8 +23,8 @@ interface ChartData {
   dashboardName: string;
   chartType: 'line' | 'bar';
   sqlQuery: string;
-  xAxisField: string;
-  yAxisField: string;
+  xaxisfield: string;
+  yaxisfield: string;
   dateField: { table: string; field: string };
 }
 
@@ -143,7 +143,7 @@ export const Chart = ({ chartId, containerStyle }: ChartProps) => {
   if (!chartData || displayData.length === 0)
     return <div>No data available</div>;
 
-  const { chartType, name } = chartData;
+  const { chartType, name, xaxisfield } = chartData;
 
   return (
     <div style={containerStyle}>
@@ -152,7 +152,7 @@ export const Chart = ({ chartId, containerStyle }: ChartProps) => {
         {chartType === 'line' ? (
           <LineChart data={displayData}>
             <CartesianGrid strokeDasharray="5 5" />
-            <XAxis dataKey="date" tickFormatter={formatDate} />
+            <XAxis dataKey={xaxisfield} tickFormatter={formatDate} />
             <YAxis tickFormatter={(value) => `$${value}`} />
             <Tooltip content={<CustomTooltip active={true} />} />
             <Line
@@ -171,7 +171,7 @@ export const Chart = ({ chartId, containerStyle }: ChartProps) => {
         ) : (
           <BarChart data={displayData}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" tickFormatter={formatDate} />
+            <XAxis dataKey={xaxisfield} tickFormatter={formatDate} />
             <YAxis tickFormatter={(value) => `$${value}`} />
             <Tooltip content={<CustomTooltip active={true} />} />
             <Bar dataKey="spendAtSubway" fill="#8884d8" barSize={50} />
