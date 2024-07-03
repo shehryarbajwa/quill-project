@@ -44,9 +44,8 @@ export function DropdownMenuRadioButtons({
   }, [initialValue]);
 
   const handlePresetChange = (newPreset: string) => {
-    const newPresetDateFormat = getDateRange(newPreset);
-
     setSelectedPreset(newPreset);
+    const newPresetDateFormat = getDateRange(newPreset);
     setUserDateRange(newPresetDateFormat);
   };
 
@@ -60,19 +59,19 @@ export function DropdownMenuRadioButtons({
         <DropdownMenuSeparator />
         <DropdownMenuRadioGroup
           value={selectedPreset}
-          onValueChange={(newPreset) => handlePresetChange(newPreset)}
+          onValueChange={(value) => handlePresetChange(value)}
         >
           <DropdownMenuRadioItem value="CURRENT_MONTH">
-            Current Month
+            {getDisplayText('CURRENT_MONTH')}
           </DropdownMenuRadioItem>
           <DropdownMenuRadioItem value="LAST_30_DAYS">
-            Last 30 Days
+            {getDisplayText('LAST_30_DAYS')}
           </DropdownMenuRadioItem>
           <DropdownMenuRadioItem value="LAST_60_DAYS">
-            Last 60 Days
+            {getDisplayText('LAST_60_DAYS')}
           </DropdownMenuRadioItem>
           <DropdownMenuRadioItem value="LAST_90_DAYS">
-            Last 90 Days
+            {getDisplayText('LAST_90_DAYS')}
           </DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>
       </DropdownMenuContent>

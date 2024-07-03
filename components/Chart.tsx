@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, CSSProperties } from 'react';
 import {
   LineChart,
   Line,
@@ -15,6 +15,7 @@ import { useDateRangeContext } from './context/DateRangeContext';
 import { endOfDay, isWithinInterval, parseISO, startOfDay } from 'date-fns';
 import { DateRange } from 'react-day-picker';
 import CustomTooltip from './Tooltip';
+import { formatDate } from '@/lib/daterange';
 
 interface ChartData {
   name: string;
@@ -29,12 +30,19 @@ interface ChartData {
 
 interface DataPoint {
   date: string;
-  total: number;
+  spendAtSubway: number;
+  spendAtChevron: number;
 }
 
 interface ChartProps {
   chartId: string;
-  containerStyle?: React.CSSProperties;
+  containerStyle?: CSSProperties;
+}
+
+interface ResponseProps {
+  date: string;
+  merchant: string;
+  total: number;
 }
 
 export const Chart = ({ chartId, containerStyle }: ChartProps) => {
@@ -60,10 +68,23 @@ export const Chart = ({ chartId, containerStyle }: ChartProps) => {
           setInitialDateRange(fetchDateRange);
         }
 
-        const transformedData = response.data.map((item: any) => ({
-          date: item.date,
-          total: parseFloat(item.value),
-        }));
+        const transformedData: DataPoint[] = [];
+        response.data.forEach(({ date, merchant, total }: ResponseProps) => {
+          let entry = transformedData.find((d) => d.date === date);
+
+          if (!entry) {
+            entry = { date, spendAtSubway: 0, spendAtChevron: 0 };
+            transformedData.push(entry);
+          }
+
+          // Add the total to the corresponding merchant
+          if (merchant === 'Subway') {
+            entry.spendAtSubway += total;
+          } else if (merchant === 'Chevron') {
+            entry.spendAtChevron += total;
+          }
+        });
+
         setAllData(transformedData);
         setDisplayData(transformedData);
       } catch (error) {
@@ -108,6 +129,7 @@ export const Chart = ({ chartId, containerStyle }: ChartProps) => {
 
     if (isWithinInitialInterval) {
       const filteredData = allData.filter((point) => {
+        console.log('point', point);
         const pointDate = parseISO(point.date);
         return isWithinInterval(pointDate, userInterval);
       });
@@ -133,45 +155,34 @@ export const Chart = ({ chartId, containerStyle }: ChartProps) => {
   return (
     <div style={containerStyle}>
       <h2 className="text-xl font-bold mb-4">{name}</h2>
-      <ResponsiveContainer width={500} height={500}>
+      <ResponsiveContainer width={600} height={500}>
         {chartType === 'line' ? (
           <LineChart data={displayData}>
             <CartesianGrid strokeDasharray="5 5" />
-            <XAxis
-              dataKey="date"
-              tickFormatter={(dateStr) =>
-                new Date(dateStr).toLocaleDateString('en-GB', {
-                  month: 'short',
-                  year: 'numeric',
-                })
-              }
-            />
+            <XAxis dataKey="date" tickFormatter={formatDate} />
             <YAxis tickFormatter={(value) => `$${value}`} />
             <Tooltip content={<CustomTooltip active={true} />} />
-
             <Line
               type="monotoneX"
-              dataKey="total"
-              stroke="#6571bf"
-              strokeWidth={5}
+              dataKey="spendAtSubway"
+              stroke="#8884d8"
+              strokeWidth={2}
+            />
+            <Line
+              type="monotoneX"
+              dataKey="spendAtChevron"
+              stroke="#82ca9d"
+              strokeWidth={2}
             />
           </LineChart>
         ) : (
           <BarChart data={displayData}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="date"
-              tickFormatter={(dateStr) =>
-                new Date(dateStr).toLocaleDateString('en-GB', {
-                  month: 'short',
-                  year: 'numeric',
-                })
-              }
-            />
+            <XAxis dataKey="date" tickFormatter={formatDate} />
             <YAxis tickFormatter={(value) => `$${value}`} />
             <Tooltip content={<CustomTooltip active={true} />} />
-
-            <Bar dataKey="total" fill="#8884d8" barSize={50} />
+            <Bar dataKey="spendAtSubway" fill="#8884d8" barSize={50} />
+            <Bar dataKey="spendAtChevron" fill="#82ca9d" barSize={50} />
           </BarChart>
         )}
       </ResponsiveContainer>

@@ -23,6 +23,7 @@ export const ChartService = {
       }
 
       let modifiedQuery = chart.sqlquery;
+      console.log('modifiedQuery')
 
       if (from && to && chart.dateField) {
         const { table, field } = chart.dateField;
@@ -44,13 +45,16 @@ export const ChartService = {
         throw new Error(queryError.message);
       }
 
+      console.log('query Results', queryResults)
+
       let parsedResults: ChartDataPoint[] = [];
       try {
-        parsedResults = queryResults.map((row: { result: any }) => {
-          const { date, total } = row.result;
+        parsedResults = queryResults.map((row: { result: { date: Date, merchant: string, total: number } }) => {
+          const { date, merchant, total } = row.result;
           return {
             date,
-            value: parseFloat(total),
+            total,
+            merchant
           };
         });
       } catch (parseError) {

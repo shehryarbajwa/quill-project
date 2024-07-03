@@ -10,7 +10,6 @@ const onClickDashboardItem = (dashboardItem: any) => {
 };
 
 const dashboardContainerStyle: React.CSSProperties = {
-  padding: '60px',
   backgroundColor: '#f9f9f9',
   display: 'flex',
   flexDirection: 'column',

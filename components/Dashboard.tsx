@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { CSSProperties, useEffect, useState } from 'react';
 import { Chart } from './Chart';
 import { DatePickerWithRange } from './DateRange';
 import { fetchDashboard } from '@/lib/api';
@@ -12,7 +12,7 @@ import { useToasts } from 'react-toast-notifications';
 
 interface DashboardProps {
   name: string;
-  containerStyle?: React.CSSProperties;
+  containerStyle?: CSSProperties;
   onClickDashboardItem?: (dashboardItem: any) => void;
 }
 
@@ -29,7 +29,7 @@ interface ChartProps {
 
 const chartContainerStyle: React.CSSProperties = {
   borderRadius: '40px',
-  padding: '30px',
+  padding: '20px',
   backgroundColor: '#fff',
   marginRight: '10px',
 };
@@ -65,16 +65,17 @@ export const Dashboard = ({
   return (
     <div style={containerStyle}>
       <h2 className="p-5">Dashboards</h2>
-      <div className="flex align-center gap-5 mb-10">
-        <DatePickerWithRange className="mr-4" />
+      <div className="flex flex-row gap-3 mb-10">
+        <DatePickerWithRange />
         <DropdownMenuRadioButtons initialValue={preset} />
       </div>
-      <div className="flex gap-4 ">
+      <div className="flex flex-row gap-3 ">
         {charts.map((chart: ChartProps) => (
           <div
             key={chart.id}
-            className="flex-1 min-w-[500px]"
-            onClick={() => onClickDashboardItem && onClickDashboardItem(chart)}
+            onClick={(chart) =>
+              onClickDashboardItem && onClickDashboardItem(chart)
+            }
           >
             <Chart chartId={chart.id} containerStyle={chartContainerStyle} />
           </div>
