@@ -23,7 +23,6 @@ export const ChartService = {
       }
 
       let modifiedQuery = chart.sqlquery;
-      console.log('modifiedQuery')
 
       if (from && to && chart.dateField) {
         const { table, field } = chart.dateField;
@@ -36,7 +35,7 @@ export const ChartService = {
         `;
       }
 
-      console.log('Modified query:', modifiedQuery);
+
 
       const { data: queryResults, error: queryError } = await supabase
         .rpc('execute_sql_query', { query: modifiedQuery });
@@ -45,7 +44,6 @@ export const ChartService = {
         throw new Error(queryError.message);
       }
 
-      console.log('query Results', queryResults)
 
       let parsedResults: ChartDataPoint[] = [];
       try {
