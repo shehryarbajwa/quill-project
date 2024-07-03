@@ -12,7 +12,7 @@ import {
 } from 'recharts';
 import { fetchChart } from '@/lib/api';
 import { useDateRangeContext } from './context/DateRangeContext';
-import { endOfDay, isWithinInterval, parseISO, startOfDay } from 'date-fns';
+import { isWithinInterval, parseISO } from 'date-fns';
 import { DateRange } from 'react-day-picker';
 import CustomTooltip from './Tooltip';
 import { formatDate } from '@/lib/daterange';
@@ -108,13 +108,13 @@ export const Chart = ({ chartId, containerStyle }: ChartProps) => {
     }
 
     const initialInterval = {
-      start: startOfDay(dateRange.from),
-      end: endOfDay(dateRange.to),
+      start: dateRange.from,
+      end: dateRange.to,
     };
 
     const userInterval = {
-      start: startOfDay(userDateRange.from),
-      end: endOfDay(userDateRange.to),
+      start: userDateRange.from,
+      end: userDateRange.to,
     };
 
     const isWithinInitialInterval =

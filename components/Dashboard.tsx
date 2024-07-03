@@ -6,14 +6,13 @@ import { DatePickerWithRange } from './DateRange';
 import { fetchDashboard } from '@/lib/api';
 import { useDateRangeContext } from './context/DateRangeContext';
 import { getDateRange } from '@/lib/daterange';
-import { useQuery } from 'react-query';
 import { DropdownMenuRadioButtons } from './Dropdown';
 import { useToasts } from 'react-toast-notifications';
 
 interface DashboardProps {
   name: string;
   containerStyle?: CSSProperties;
-  onClickDashboardItem?: (dashboardItem: any) => void;
+  onClickDashboardItem?: (dashboardItem: ChartProps) => void;
 }
 
 interface ChartProps {
@@ -22,17 +21,26 @@ interface ChartProps {
   dashboardName: string;
   chartType: 'line' | 'bar';
   sqlQuery: string;
-  xAxisField: string;
-  yAxisField: string;
+  xaxisfield: string;
+  yaxisfield: string;
   dateField: { table: string; field: string };
 }
 
-const chartContainerStyle: React.CSSProperties = {
+const chartContainerStyle: CSSProperties = {
   borderRadius: '40px',
   padding: '20px',
   backgroundColor: '#fff',
   marginRight: '10px',
 };
+
+interface DashboardProps {
+  name: string;
+  id: string;
+  dateFilter: {
+    name: string;
+    initialDateRange: string;
+  };
+}
 
 export const Dashboard = ({
   name,
@@ -43,19 +51,22 @@ export const Dashboard = ({
   const [preset, setPreset] = useState<string>('');
   const { addToast } = useToasts();
   const [isLoading, setIsLoading] = useState(true);
-  const [dashboard, setDashboard] = useState<any>(null);
+  const [dashboard, setDashboard] = useState<DashboardProps | undefined>();
+  const [chartData, setChartData] = useState<ChartProps[]>([]);
 
   useEffect(() => {
     const loadDashboard = async () => {
       setIsLoading(true);
       try {
         const data = await fetchDashboard(name);
-        setDashboard(data);
+
+        setDashboard(data.dashboard);
+        setChartData(data.charts);
         setDateRange(getDateRange(data.dashboard.dateFilter.initialDateRange));
         setPreset(data.dashboard.dateFilter.initialDateRange);
       } catch (err) {
         addToast('Error loading dashboard', { appearance: 'error' });
-        setDashboard(null);
+        setDashboard(undefined);
       } finally {
         setIsLoading(false);
       }
@@ -66,8 +77,7 @@ export const Dashboard = ({
 
   if (isLoading) return <div>Loading...</div>;
   if (!dashboard) return <div>Error loading dashboard</div>;
-
-  const { charts } = dashboard;
+  if (!chartData) return <div>Error Loading charts...</div>;
 
   return (
     <div style={containerStyle}>
@@ -77,12 +87,10 @@ export const Dashboard = ({
         <DropdownMenuRadioButtons initialValue={preset} />
       </div>
       <div className="flex flex-row gap-3 ">
-        {charts.map((chart: ChartProps) => (
+        {chartData.map((chart: ChartProps) => (
           <div
             key={chart.id}
-            onClick={(chart) =>
-              onClickDashboardItem && onClickDashboardItem(chart)
-            }
+            onClick={() => onClickDashboardItem && onClickDashboardItem(chart)}
           >
             <Chart chartId={chart.id} containerStyle={chartContainerStyle} />
           </div>
