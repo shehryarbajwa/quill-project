@@ -50,9 +50,7 @@ export const Chart = ({ chartId, containerStyle }: ChartProps) => {
   const [allData, setAllData] = useState<DataPoint[]>([]);
   const [displayData, setDisplayData] = useState<DataPoint[]>([]);
   const { dateRange, userDateRange } = useDateRangeContext();
-  const [initialDateRange, setInitialDateRange] = useState<DateRange | null>(
-    null
-  );
+
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [outsideInterval, setOutsideInterval] = useState<boolean>(false);
 
@@ -64,13 +62,10 @@ export const Chart = ({ chartId, containerStyle }: ChartProps) => {
         if (!response) throw Error('UN_AVAILABLE');
 
         setChartData(response.chart);
-        if (!initialDateRange) {
-          setInitialDateRange(fetchDateRange);
-        }
 
         const transformedData: DataPoint[] = [];
         response.data.forEach(({ date, merchant, total }: ResponseProps) => {
-          let entry = transformedData.find((d) => d.date === date);
+          let entry = transformedData.find((item) => item.date === date);
 
           if (!entry) {
             entry = { date, spendAtSubway: 0, spendAtChevron: 0 };
@@ -92,7 +87,7 @@ export const Chart = ({ chartId, containerStyle }: ChartProps) => {
         setIsLoading(false);
       }
     },
-    [chartId, initialDateRange]
+    [chartId]
   );
 
   useEffect(() => {
@@ -105,16 +100,16 @@ export const Chart = ({ chartId, containerStyle }: ChartProps) => {
     if (
       !userDateRange?.from ||
       !userDateRange?.to ||
-      !initialDateRange?.from ||
-      !initialDateRange?.to ||
+      !dateRange?.from ||
+      !dateRange?.to ||
       isLoading
     ) {
       return;
     }
 
     const initialInterval = {
-      start: startOfDay(initialDateRange.from),
-      end: endOfDay(initialDateRange.to),
+      start: startOfDay(dateRange.from),
+      end: endOfDay(dateRange.to),
     };
 
     const userInterval = {
@@ -136,7 +131,7 @@ export const Chart = ({ chartId, containerStyle }: ChartProps) => {
     } else {
       setOutsideInterval(true);
     }
-  }, [userDateRange, initialDateRange, allData, isLoading]);
+  }, [userDateRange, dateRange, allData, isLoading]);
 
   useEffect(() => {
     if (outsideInterval && userDateRange) {

@@ -36,7 +36,6 @@ export const ChartService = {
       }
 
 
-
       const { data: queryResults, error: queryError } = await supabase
         .rpc('execute_sql_query', { query: modifiedQuery });
 
